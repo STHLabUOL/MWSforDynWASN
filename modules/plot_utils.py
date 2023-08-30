@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from mpl_toolkits import mplot3d
 from stl import mesh
-from topology_tools import TopologyManager
 
 def plot_scene_diary(scene_diary, max_len):
 
@@ -42,133 +41,7 @@ def plot_scene_diary(scene_diary, max_len):
 
     #plt.savefig('scene_diary.svg')
 
-def plot_positions_and_topology_undirected(example, room_model, max_len, position_handler, nodes_levels=None, export_dir=''):
-    # 2023_03_19 FOR ASMP FIGURE 9, DEMONSTRATION OF MST
-
-    # minimal: reduced plot suitable for pdf integration
-
-    room_mesh = mesh.Mesh.from_file(room_model)
-    figure = plt.figure(figsize=(8, 8))
-
-    nodes_list = TopologyManager.get_unique_node_list(nodes_levels) if nodes_levels is not None else []
-
-    f = plt.gca()
-    f.axes.xaxis.set_ticklabels([])
-    f.axes.yaxis.set_ticklabels([])
-    f.axes.get_xaxis().set_ticks([])
-    f.axes.get_yaxis().set_ticks([])
-
-    for node_id, params in example['nodes'].items():
-        is_root = node_id == nodes_levels[0][0][0]
-        line_width = 2#4 if is_root else 2
-        opac = 1 if node_id in nodes_list else 0.35
-        pos = position_handler.get_node_pos(params['pos_id'])['coordinates']
-        plt.scatter(pos[0], pos[1],  s=2000, color='w', edgecolors='k', linewidths=line_width, alpha=opac)
-        plt.text(pos[0], pos[1], node_id.split("_")[-1], alpha=opac, fontsize=20, zorder=99, fontweight=400, horizontalalignment='center', verticalalignment='center')
-
-    # Plot topolgy: Graph edges
-    if nodes_levels is not None:
-        colors = ['k']
-        zorder=100
-        opacity = 1
-        for lid, level in enumerate(nodes_levels):
-            zorder -= 1
-            for bid, branch in enumerate(level):
-                col = colors[lid%len(colors)]
-                root_pos = position_handler.get_node_pos(example['nodes'][branch[0]]['pos_id'])['coordinates']
-                for idx, node in enumerate(branch):
-                    if idx == 0: continue
-                    pos = position_handler.get_node_pos(example['nodes'][node]['pos_id'])['coordinates']
-                    # arrow-head: (ax.arrow() is buggy)
-                    alpha = np.pi/4 # arrow-dash angle
-                    z = 0.15 # arrow-dash len
-                    pos2d = np.array(pos[:2])
-                    root_pos2d = np.array(root_pos[:2])
-                    R_top = np.array([[np.cos(alpha), -np.sin(alpha)], 
-                            [np.sin(alpha), np.cos(alpha)]])
-                    R_bottom = np.array([[np.cos(-alpha), -np.sin(-alpha)], 
-                            [np.sin(-alpha), np.cos(-alpha)]])
-                    diff_vec_normed = (root_pos2d - pos2d)/np.linalg.norm(root_pos2d - pos2d)
-                    xadd = np.array([1, 0]).dot(diff_vec_normed)*0.45
-                    yadd = np.array([0, 1]).dot(diff_vec_normed)*0.45
-                    root_pos2d = root_pos2d - np.array([xadd, yadd])
-                    pos2d = pos2d + np.array([xadd, yadd])
-                    dash1 = R_top.dot(diff_vec_normed*z)
-                    dash2 = R_bottom.dot(diff_vec_normed*z)
-                    plt.plot([root_pos2d[0], pos2d[0]], [root_pos2d[1], pos2d[1]], color=col, linewidth=3, zorder=zorder, alpha=opacity)
-                    #plt.plot([pos2d[0], pos2d[0]+dash1[0]], [pos2d[1], pos2d[1]+dash1[1]], color=col, linewidth=3, zorder=zorder, alpha=opacity) 
-                    #plt.plot([pos2d[0], pos2d[0]+dash2[0]], [pos2d[1], pos2d[1]+dash2[1]], color=col, linewidth=3, zorder=zorder, alpha=opacity)
-
-    plt.xlim((-0.3, 8.3))
-    plt.ylim((-0.3, 8.3))
-
-    if export_dir:
-        plt.savefig(export_dir)
-
-def plot_positions_and_topology_minimal(example, room_model, max_len, position_handler, nodes_levels=None, export_dir=''):
-
-    # minimal: reduced plot suitable for pdf integration
-
-    room_mesh = mesh.Mesh.from_file(room_model)
-    figure = plt.figure(figsize=(8, 8))
-
-    nodes_list = TopologyManager.get_unique_node_list(nodes_levels) if nodes_levels is not None else []
-
-    f = plt.gca()
-    f.axes.xaxis.set_ticklabels([])
-    f.axes.yaxis.set_ticklabels([])
-    f.axes.get_xaxis().set_ticks([])
-    f.axes.get_yaxis().set_ticks([])
-
-    for node_id, params in example['nodes'].items():
-        is_root = node_id == nodes_levels[0][0][0]
-        line_width = 4 if is_root else 2
-        opac = 1 if node_id in nodes_list else 0.35
-        pos = position_handler.get_node_pos(params['pos_id'])['coordinates']
-        plt.scatter(pos[0], pos[1],  s=2000, color='w', edgecolors='k', linewidths=line_width, alpha=opac)
-        plt.text(pos[0], pos[1], node_id.split("_")[-1], alpha=opac, fontsize=20, zorder=99, fontweight=400, horizontalalignment='center', verticalalignment='center')
-
-    # Plot topolgy: Graph edges
-    if nodes_levels is not None:
-        colors = ['k', 'b', 'g', 'r', 'c', 'm', 'y']
-        zorder=100
-        opacity = 1
-        for lid, level in enumerate(nodes_levels):
-            zorder -= 1
-            for bid, branch in enumerate(level):
-                col = colors[lid%len(colors)]
-                root_pos = position_handler.get_node_pos(example['nodes'][branch[0]]['pos_id'])['coordinates']
-                for idx, node in enumerate(branch):
-                    if idx == 0: continue
-                    pos = position_handler.get_node_pos(example['nodes'][node]['pos_id'])['coordinates']
-                    # arrow-head: (ax.arrow() is buggy)
-                    alpha = np.pi/4 # arrow-dash angle
-                    z = 0.15 # arrow-dash len
-                    pos2d = np.array(pos[:2])
-                    root_pos2d = np.array(root_pos[:2])
-                    R_top = np.array([[np.cos(alpha), -np.sin(alpha)], 
-                            [np.sin(alpha), np.cos(alpha)]])
-                    R_bottom = np.array([[np.cos(-alpha), -np.sin(-alpha)], 
-                            [np.sin(-alpha), np.cos(-alpha)]])
-                    diff_vec_normed = (root_pos2d - pos2d)/np.linalg.norm(root_pos2d - pos2d)
-                    xadd = np.array([1, 0]).dot(diff_vec_normed)*0.45
-                    yadd = np.array([0, 1]).dot(diff_vec_normed)*0.45
-                    root_pos2d = root_pos2d - np.array([xadd, yadd])
-                    pos2d = pos2d + np.array([xadd, yadd])
-                    dash1 = R_top.dot(diff_vec_normed*z)
-                    dash2 = R_bottom.dot(diff_vec_normed*z)
-                    plt.plot([root_pos2d[0], pos2d[0]], [root_pos2d[1], pos2d[1]], color=col, linewidth=3, zorder=zorder, alpha=opacity)
-                    plt.plot([pos2d[0], pos2d[0]+dash1[0]], [pos2d[1], pos2d[1]+dash1[1]], color=col, linewidth=3, zorder=zorder, alpha=opacity) 
-                    plt.plot([pos2d[0], pos2d[0]+dash2[0]], [pos2d[1], pos2d[1]+dash2[1]], color=col, linewidth=3, zorder=zorder, alpha=opacity)
-
-    plt.xlim((-0.3, 8.3))
-    plt.ylim((-0.3, 8.3))
-
-    if export_dir:
-        #plt.tight_layout(pad=0)
-        plt.savefig(export_dir)
-
-def plot_positions_and_topology(example, room_model, max_len, position_handler, nodes_levels=None, export_dir=""):
+def plot_positions_and_topology(example, room_model, max_len, nodes_levels=None, export_dir=""):
 
     room_mesh = mesh.Mesh.from_file(room_model)
     figure = plt.figure(figsize=(8, 8))
@@ -186,29 +59,32 @@ def plot_positions_and_topology(example, room_model, max_len, position_handler, 
     ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
     ax.add_collection3d(poly)
 
+    node_coord = lambda nid: example['nodes'][str(nid)]['position']['coordinates']
+
     for node_id, params in example['nodes'].items():
         is_root = node_id == nodes_levels[0][0][0]
         line_width = 3 if is_root else 1.5
-        pos = position_handler.get_node_pos(params['pos_id'])['coordinates']
+        pos = node_coord(node_id)#position_handler.get_node_pos(params['pos_id'])['coordinates']
         ax.scatter(pos[0], pos[1], 5, s=750, color='w', edgecolors='k', linewidths=line_width)
         ax.text(pos[0], pos[1], 5, node_id.split("_")[-1], fontsize=12, zorder=99, fontweight=800, horizontalalignment='center', verticalalignment='center')
 
 
     src_positions = []
+    src_position_ids = []
     for src in sorted(example['src_diary'], key=lambda x: x['onset']):
         pos_id = src['pos_id']
         onset = src['onset']
         if onset > max_len:
             break
-        if src['pos_id'] not in src_positions:
-            src_positions.append(src['pos_id'])
+        if src['pos_id'] not in src_position_ids:
+            src_position_ids.append(src['pos_id'])
+            src_positions.append(src['position']['coordinates'])
 
-    for src_id in src_positions:
-        #continue #tmp
-        pos = position_handler.get_src_pos(src_id)['coordinates']
+    for idx, pos_id in enumerate(src_position_ids):
+        pos = src_positions[idx]
         pos_shifted = [pos[0]+0.3, pos[1]-0.3, pos[2]] # for more visual clarity in plot
         ax.scatter(pos_shifted[0], pos_shifted[1], 15, s=100, color='b')
-        ax.text(pos_shifted[0]-.35, pos_shifted[1]-.35, 15, src_id, fontsize=12, fontweight=600)
+        ax.text(pos_shifted[0]-.35, pos_shifted[1]-.35, 15, pos_id, fontsize=12, fontweight=600)
 
     # Plot topolgy: Graph edges
     if nodes_levels is not None:
@@ -219,10 +95,10 @@ def plot_positions_and_topology(example, room_model, max_len, position_handler, 
             zorder -= 1
             for bid, branch in enumerate(level):
                 col = colors[lid%len(colors)]
-                root_pos = position_handler.get_node_pos(example['nodes'][branch[0]]['pos_id'])['coordinates']
+                root_pos = node_coord(branch[0])#position_handler.get_node_pos(example['nodes'][branch[0]]['pos_id'])['coordinates']
                 for idx, node in enumerate(branch):
                     if idx == 0: continue
-                    pos = position_handler.get_node_pos(example['nodes'][node]['pos_id'])['coordinates']
+                    pos = node_coord(node)#position_handler.get_node_pos(example['nodes'][node]['pos_id'])['coordinates']
                     # arrow-head: (ax.arrow() is buggy)
                     alpha = np.pi/4 # arrow-dash angle
                     z = 0.15 # arrow-dash len
