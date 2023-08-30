@@ -21,8 +21,8 @@ INIT
 '''
 
 EVAL_BEFORE_SEGMENT = False
-SIM_DATA_ROOT = ''
-EVAL_TARGET_DATA_ROOT = ''
+SIM_DATA_ROOT = 'results/2023_03_24/simulation/join/'
+EVAL_TARGET_DATA_ROOT = 'results/2023_03_24/evaluation/after/join/'
 N_PROCS_MAX = 4 #max. number of parallel processes scales memory requirements.
 
 if not os.path.isdir(SIM_DATA_ROOT):

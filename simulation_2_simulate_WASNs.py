@@ -23,8 +23,8 @@ INIT
 
 SIM_TYPE = 'join' #"join", "leave", "unlink", "leave_root" 
 DATA_ROOT = 'data/'
-TOPOLOGIES_FILE = 'data/topologies/topologies_50_N_4-6_with_tSwitch_earlier_unique.pkl'
-SIM_TARGET_DATA_ROOT = 'results/test/simulation/'+SIM_TYPE+'/'
+TOPOLOGIES_FILE = 'results/2023_03_24/node_groups.pkl'
+SIM_TARGET_DATA_ROOT = 'results/2023_03_24/simulation/'+SIM_TYPE+'/'
 
 if os.path.isdir(SIM_TARGET_DATA_ROOT):
     raise Exception('Target directory already exists.')
