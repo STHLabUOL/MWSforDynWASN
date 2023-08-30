@@ -11,8 +11,7 @@ import random
 INIT
 '''
 
-DATA_ROOT = 'data_asmp/'
-TARGET_FILE = 'simulation_data/topologies/topologies_50_N_4-6_noBottleneck.pkl'
+TARGET_FILE = ''
 if os.path.isfile(TARGET_FILE):
     raise Exception('Target file already exists.')
 
