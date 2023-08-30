@@ -1,5 +1,5 @@
 '''
-Evaluate simulation results such as RMSE, AMSC and SSNR.
+Evaluate simulation results (RMSE, AMSC, SSNR, ...)
 '''
 
 import os
@@ -9,9 +9,8 @@ import pickle
 import scipy
 from multiprocessing import Process, Queue
 
+from lazy_dataset.database import JsonDatabase
 from paderbox.io import load_audio
-from asn_testbed.database.database import AsyncWASN
-from asn_testbed.database.handler import PositionHandler
 
 sys.path.append('modules/')
 from online_resampler import OnlineResampler_OA
@@ -21,9 +20,9 @@ from topology_tools import TopologyManager
 INIT
 '''
 
-EVAL_BEFORE_SEGMENT = True
-SIM_DATA_ROOT = 'results/2023_03_24/simulation/join/'#'revision/betterResampler/simulation_data/2023_07_12/join/'
-EVAL_TARGET_DATA_ROOT = 'results/2023_03_24/evaluation/before/'
+EVAL_BEFORE_SEGMENT = False
+SIM_DATA_ROOT = ''
+EVAL_TARGET_DATA_ROOT = ''
 N_PROCS_MAX = 4 #max. number of parallel processes scales memory requirements.
 
 if not os.path.isdir(SIM_DATA_ROOT):
@@ -47,9 +46,8 @@ pos_json = simdata['paths']['pos_json']
 ex_id = simdata['example_id']
 n_nodes_all = simdata['n_nodes_all']
 n_frames = int((sig_len_sec*fs_Hz)/frame_len) 
-position_handler = PositionHandler(pos_json)
-example_db = AsyncWASN(testbed_json, position_handler)
-examples = example_db.get_scenario('examples')
+example_db = JsonDatabase(testbed_json)
+examples = example_db.get_dataset('examples')
 node_sro = lambda nid: examples[ex_id]['nodes'][nid]['sro']
 nodes_select_all = ['node_'+str(nid) for nid in list(range(n_nodes_all))] # all signals should be loaded
 

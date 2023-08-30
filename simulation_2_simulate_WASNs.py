@@ -10,9 +10,7 @@ import random
 import pickle
 from datetime import datetime
 
-
-from asn_testbed.database.database import AsyncWASN
-from asn_testbed.database.handler import PositionHandler, TimeHandler
+from lazy_dataset.database import JsonDatabase
 
 sys.path.append('modules/')
 from audio_reader import AudioReader # customized, previously part of asn_testbed
@@ -23,10 +21,10 @@ from topology_tools import TopologyManager
 INIT
 '''
 
-SIM_TYPE = 'leave_root' #"join", "leave", "unlink", "leave_root" 
-DATA_ROOT = '/home/niklas/asn_testbed_p2/other/2023_ASMP/data_asmp/'
-TOPOLOGIES_FILE = '/home/niklas/asn_testbed_p2/other/2023_ASMP/simulation_data/topologies/topologies_50_N_4-6_with_tSwitch_earlier_unique.pkl'
-SIM_TARGET_DATA_ROOT = 'results/2023_08_08_testChanges/simulation/'+SIM_TYPE+'/'
+SIM_TYPE = 'join' #"join", "leave", "unlink", "leave_root" 
+DATA_ROOT = 'data/'
+TOPOLOGIES_FILE = 'data/topologies/topologies_50_N_4-6_with_tSwitch_earlier_unique.pkl'
+SIM_TARGET_DATA_ROOT = 'results/test/simulation/'+SIM_TYPE+'/'
 
 if os.path.isdir(SIM_TARGET_DATA_ROOT):
     raise Exception('Target directory already exists.')
@@ -40,12 +38,10 @@ frame_len = 2**11
 testbed_json = DATA_ROOT+'json/testbed.json'
 pos_json = DATA_ROOT+'json/positions.json'
 n_frames = int((sig_len_sec*fs_Hz)/frame_len) 
-position_handler = PositionHandler(pos_json)
-time_handler = TimeHandler()
-example_db = AsyncWASN(testbed_json, position_handler)
-examples = example_db.get_scenario('examples')
+example_db = JsonDatabase(testbed_json)
+examples = example_db.get_dataset('examples')
 ex_id = 0
-node_coord = lambda nid: position_handler.get_node_pos(examples[ex_id]['nodes']["node_"+str(nid)]['pos_id'])['coordinates']
+node_coord = lambda nid: examples[ex_id]['nodes']["node_"+str(nid)]['position']['coordinates']
 node_sro = lambda nid: examples[ex_id]['nodes'][nid]['sro']
 n_nodes_all = 13
 nodes_select_all = ['node_'+str(nid) for nid in list(range(n_nodes_all))] # all signals should be loaded
@@ -145,7 +141,6 @@ def modify_topology(TopMng, n_nodes_all, scenario):
 
 
 for i, topology in enumerate(topologies): 
-
 
     frame_idx_switch = topology['frame_idx_switch']
     t_switch = frame_idx_switch*frame_len/fs_Hz
