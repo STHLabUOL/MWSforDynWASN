@@ -6,9 +6,9 @@ import math
 from multiprocessing import Process, Queue
 import numpy as np
 from scipy import signal
-from online_resampler import OnlineResampler_STFT, OnlineResampler_OA
-from delay_buffer import DelayBuffer
-from topology_tools import TopologyManager
+from modules.online_resampler import OnlineResampler_STFT, OnlineResampler_OA
+from modules.delay_buffer import DelayBuffer
+from modules.topology_tools import TopologyManager
 
 class Node():
 

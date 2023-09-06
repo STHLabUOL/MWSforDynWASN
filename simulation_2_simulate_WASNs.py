@@ -4,7 +4,6 @@ Simulates WASNs for previously drawn node groups.
 
 import numpy as np
 import os
-import sys
 from tqdm import tqdm
 import random
 import pickle
@@ -12,10 +11,9 @@ from datetime import datetime
 
 from lazy_dataset.database import JsonDatabase
 
-sys.path.append('modules/')
-from audio_reader import AudioReader # customized, previously part of asn_testbed
-from sro_estimation import NetworkController
-from topology_tools import TopologyManager
+from modules.audio_reader import AudioReader # customized, previously part of asn_testbed
+from modules.sro_estimation import NetworkController
+from modules.topology_tools import TopologyManager
 
 '''
 INIT

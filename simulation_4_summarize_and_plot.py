@@ -6,11 +6,9 @@ Load and sort evaluation results to produce the final plots.
 import os
 import copy
 import matplotlib.pyplot as plt
-import sys
 import pickle
 
-sys.path.append('modules/')
-from topology_tools import TopologyManager
+from modules.topology_tools import TopologyManager
 
 #%%
 '''

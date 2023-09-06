@@ -3,7 +3,6 @@ Evaluate simulation results (RMSE, AMSC, SSNR, ...)
 '''
 
 import os
-import sys
 import numpy as np
 import pickle
 import scipy
@@ -12,9 +11,8 @@ from multiprocessing import Process, Queue
 from lazy_dataset.database import JsonDatabase
 from paderbox.io import load_audio
 
-sys.path.append('modules/')
-from online_resampler import OnlineResampler_OA
-from topology_tools import TopologyManager
+from modules.online_resampler import OnlineResampler_OA
+from modules.topology_tools import TopologyManager
 
 '''
 INIT
