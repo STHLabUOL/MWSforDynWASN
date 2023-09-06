@@ -1,5 +1,6 @@
 '''
 Draw groups of nodes for which topologies are generated in the simulation.
+Genereted groups are saved in a Python pickle file.
 '''
 
 import os
@@ -11,7 +12,7 @@ import random
 INIT
 '''
 
-TARGET_FILE = ''
+TARGET_FILE = 'node_groups.pkl'
 if os.path.isfile(TARGET_FILE):
     raise Exception('Target file already exists.')
 
