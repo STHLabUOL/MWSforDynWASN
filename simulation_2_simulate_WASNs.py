@@ -85,7 +85,7 @@ if n_frames > n_frames_max:
     sig_len_sec = n_frames*frame_len/fs_Hz
     print('Warning: Audio signals too short for desired simulation length of ', str(sig_len_prev), 's. \nReduced simulation length to ', str(sig_len_sec), 's')
 signals = np.stack(tuple(examples[ex_id]['audio'][node]['mic_0'][:n_frames,:] for node in nodes_select_all), axis=2)
-print('...audio signals loaded.')
+print('...Audio signals loaded.')
 
 '''
 SIMULATE...
@@ -138,6 +138,7 @@ def modify_topology(TopMng, n_nodes_all, scenario):
     return node_ids_ever, node_id_changed, node_link_changed
 
 
+print('Simulation started: ' + datetime.now().strftime('-%Y-%B-%d--%H-%M'))
 for i, topology in enumerate(topologies): 
 
     frame_idx_switch = topology['frame_idx_switch']
@@ -214,5 +215,5 @@ for i, topology in enumerate(topologies):
     with open(SIM_TARGET_DATA_ROOT+SIM_TYPE+'_'+str(i+1)+'_'+str(len(topologies))+'.pkl', 'wb') as f:
         pickle.dump(res, f)
 
-
+print('Simulation finished: ' + datetime.now().strftime('-%Y-%B-%d--%H-%M'))
 
