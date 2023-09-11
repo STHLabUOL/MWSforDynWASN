@@ -45,8 +45,7 @@ def plot_positions_and_topology(example, room_model, max_len, nodes_levels=None,
 
     room_mesh = mesh.Mesh.from_file(room_model)
     figure = plt.figure(figsize=(8, 8))
-    #figure.suptitle('Fig.1 Geometry')
-    ax = mplot3d.Axes3D(figure)
+    ax = figure.add_subplot(111, projection='3d')#mplot3d.Axes3D(figure)
     ax.view_init(azim=-90, elev=90)
 
     poly = mplot3d.art3d.Poly3DCollection(room_mesh.vectors)
@@ -61,6 +60,7 @@ def plot_positions_and_topology(example, room_model, max_len, nodes_levels=None,
 
     node_coord = lambda nid: example['nodes'][str(nid)]['position']['coordinates']
 
+   
     for node_id, params in example['nodes'].items():
         is_root = node_id == nodes_levels[0][0][0]
         line_width = 3 if is_root else 1.5
@@ -120,8 +120,9 @@ def plot_positions_and_topology(example, room_model, max_len, nodes_levels=None,
                     plt.plot([pos2d[0], pos2d[0]+dash2[0]], [pos2d[1], pos2d[1]+dash2[1]], color=col, linewidth=3, zorder=zorder, alpha=opacity)
 
 
+    plt.tight_layout()
+
     if export_dir:
-        #plt.tight_layout(pad=0)
         plt.savefig(export_dir)
 
 def plot_pos_hist(src_diary, max_len):
@@ -165,14 +166,9 @@ def plot_pos_hist(src_diary, max_len):
         if src_id not in labels:
             handles.append(handle)
             labels.append(src_id)
-    #plt.title('Fig.2 (a) Source activity')
-    #plt.xlabel('Time [s]')
     plt.xlim(0, max_len)
     plt.ylabel('Position ID')
     plt.yticks((np.arange(num_rows) + .5) / num_rows , src_positions)
     plt.grid()
     #plt.legend(handles, labels,loc='upper center', bbox_to_anchor=(0.5, 1.2), ncol=len(sources))
-    plt.legend(handles, labels,loc='upper center', ncol=len(sources))
-    import tikzplotlib
-    #tikzplotlib.save('plots/tikz/src_activity.tex')
-    #plt.savefig('source_hist.svg')
+    #plt.legend(handles, labels,loc='upper center', ncol=len(sources))
