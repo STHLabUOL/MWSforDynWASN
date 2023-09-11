@@ -14,50 +14,6 @@ from paderbox.io import load_audio
 from modules.online_resampler import OnlineResampler_OA
 from modules.topology_tools import TopologyManager
 
-'''
-INIT
-'''
-
-EVAL_BEFORE_SEGMENT = False
-SIM_DATA_ROOT = 'results/2023_03_24/simulation/join/'
-EVAL_TARGET_DATA_ROOT = 'results/2023_03_24/evaluation/after/join/'
-N_PROCS_MAX = 4 #max. number of parallel processes scales memory requirements.
-
-if not os.path.isdir(SIM_DATA_ROOT):
-    raise Exception('Simulation data directory not found.')
-if os.path.isdir(EVAL_TARGET_DATA_ROOT):
-    raise Exception('Target directory already exists. Please remove or choose a different directory name.')
-else:
-    os.makedirs(EVAL_TARGET_DATA_ROOT)
-
-
-# Import parameters from simulation metadata
-with open(SIM_DATA_ROOT+'sim_metadata.pkl', 'rb') as f:
-    simdata = pickle.load(f)
-sim_type = simdata['sim_type']
-sig_len_sec = simdata['sig_len_sec']
-fs_Hz = simdata['fs_Hz']
-frame_len = simdata['frame_len']
-DATA_ROOT = simdata['paths']['data_root']
-testbed_json = simdata['paths']['testbed_json']
-pos_json = simdata['paths']['pos_json']
-ex_id = simdata['example_id']
-n_nodes_all = simdata['n_nodes_all']
-n_frames = int((sig_len_sec*fs_Hz)/frame_len) 
-example_db = JsonDatabase(testbed_json)
-examples = example_db.get_dataset('examples')
-node_sro = lambda nid: examples[ex_id]['nodes'][nid]['sro']
-nodes_select_all = ['node_'+str(nid) for nid in list(range(n_nodes_all))] # all signals should be loaded
-
-# Load async- and synchronous signals for all nodes
-signals_async = np.zeros((n_frames, frame_len, n_nodes_all))
-signals_sync = np.zeros((n_frames, frame_len, n_nodes_all))
-for i in range(n_nodes_all):
-    signal_sync = load_audio(DATA_ROOT+'audio/example_0_sync/node_'+str(i)+'_mic_0.wav')[0:(n_frames*frame_len)]
-    signals_sync[:,:,i] = np.reshape(signal_sync, (n_frames, frame_len))
-    signal_async = load_audio(DATA_ROOT+'audio/example_0_async/node_'+str(i)+'_mic_0.wav')[0:(n_frames*frame_len)]
-    signals_async[:,:,i] = np.reshape(signal_async, (n_frames, frame_len))
-
 
 
 def gen_offset(sig, offset, fft_size):
@@ -233,7 +189,10 @@ def evaluate_simulation_results(
         ssnr.append(10*np.log10(var_sync/var_diff))
         # ssnr before sync
         var_diff_async = np.var(signals_sync[eval_idx_range,:,n].flatten() - s_async)
-        ssnr_async.append(10*np.log10(var_sync/var_diff_async))
+        ssnr_async_ = 10*np.log10(var_sync/var_diff_async) if var_diff_async > 0 else np.inf
+        ssnr_async.append(ssnr_async_)
+
+
     if verbose: print('SSNR: ', ssnr); print('SSNR_async: ', ssnr_async)
 
 
@@ -266,6 +225,7 @@ def process_eval(q, pid, sim_result_file):
     resultsSelect_after = [node_ids_ever.index(int(nid.split('_')[1])) for nid in nodes_select_after]
 
     # Get output offset (signal latency) of each node
+    #res['resamplerDelay'] = 1 # TEMP!
     node_level_positions_before = TopologyManager.get_node_level_positions(res['nodes_levels_before'])
     node_level_positions_after = TopologyManager.get_node_level_positions(res['nodes_levels_after'])
     node_signals_offset_before = {int(nid_str.split('_')[1]): (lid+1)*res['resamplerDelay'] for nid_str, lid in node_level_positions_before.items()}
@@ -391,27 +351,77 @@ def collect_results():
     print('Got all results.')
 
 
-q = Queue()
-procs = []
-got_results = {}
-n_procs_started = 0
-directory = os.fsencode(SIM_DATA_ROOT)
-for nn, file in enumerate(os.listdir(directory)):
-    filename = os.fsdecode(file)
-    if not filename.endswith(".pkl"):
-        print('[Warning] Skipping file with unexpected filetype: ', filename)
-        continue
-    if filename == 'sim_metadata.pkl':
-        continue
-    print('Evaluating ', filename)
-    procs.append(Process(target=process_eval, args=(q, filename, SIM_DATA_ROOT+filename)))
-    procs[-1].start()
-    n_procs_started += 1
-    got_results[filename] = False
-    # Intermediate result collect
-    if n_procs_started % N_PROCS_MAX == 0:
-        collect_results()
-# collect remaining results if any are pending
-collect_results()
+if __name__ == "__main__":
+
+
+    '''
+    INIT
+    '''
+
+    EVAL_BEFORE_SEGMENT = False
+    SIM_DATA_ROOT = '/home/niklas/asn_testbed_p2/other/2023_ASMP_Release/results/2023_03_24/simulation/join/'#'results/2023_03_24/simulation/join/'
+    EVAL_TARGET_DATA_ROOT = '/home/niklas/asn_testbed_p2/other/2023_ASMP_Release/results/2023_03_24/evaluation/after/join2/'#'results/2023_03_24/evaluation/after/join/'
+    N_PROCS_MAX = 4 #max. number of parallel processes scales memory requirements.
+
+    if not os.path.isdir(SIM_DATA_ROOT):
+        raise Exception('Simulation data directory not found.')
+    if os.path.isdir(EVAL_TARGET_DATA_ROOT):
+        raise Exception('Target directory already exists. Please remove or choose a different directory name.')
+    else:
+        os.makedirs(EVAL_TARGET_DATA_ROOT)
+
+
+    # Import parameters from simulation metadata
+    with open(SIM_DATA_ROOT+'sim_metadata.pkl', 'rb') as f:
+        simdata = pickle.load(f)
+    sim_type = simdata['sim_type']
+    sig_len_sec = simdata['sig_len_sec']
+    fs_Hz = simdata['fs_Hz']
+    frame_len = simdata['frame_len']
+    DATA_ROOT = simdata['paths']['data_root']
+    testbed_json = simdata['paths']['testbed_json']
+    pos_json = simdata['paths']['pos_json']
+    ex_id = simdata['example_id']
+    n_nodes_all = simdata['n_nodes_all']
+    n_frames = int((sig_len_sec*fs_Hz)/frame_len) 
+    example_db = JsonDatabase(testbed_json)
+    examples = example_db.get_dataset('examples')
+    node_sro = lambda nid: examples[ex_id]['nodes'][nid]['sro']
+    nodes_select_all = ['node_'+str(nid) for nid in list(range(n_nodes_all))] # all signals should be loaded
+
+    # Load async- and synchronous signals for all nodes
+    signals_async = np.zeros((n_frames, frame_len, n_nodes_all))
+    signals_sync = np.zeros((n_frames, frame_len, n_nodes_all))
+    for i in range(n_nodes_all):
+        signal_sync = load_audio(DATA_ROOT+'audio/example_0_sync/node_'+str(i)+'_mic_0.wav')[0:(n_frames*frame_len)]
+        signals_sync[:,:,i] = np.reshape(signal_sync, (n_frames, frame_len))
+        signal_async = load_audio(DATA_ROOT+'audio/example_0_async/node_'+str(i)+'_mic_0.wav')[0:(n_frames*frame_len)]
+        signals_async[:,:,i] = np.reshape(signal_async, (n_frames, frame_len))
+
+
+
+
+    q = Queue()
+    procs = []
+    got_results = {}
+    n_procs_started = 0
+    directory = os.fsencode(SIM_DATA_ROOT)
+    for nn, file in enumerate(os.listdir(directory)):
+        filename = os.fsdecode(file)
+        if not filename.endswith(".pkl"):
+            print('[Warning] Skipping file with unexpected filetype: ', filename)
+            continue
+        if filename == 'sim_metadata.pkl':
+            continue
+        print('Evaluating ', filename)
+        procs.append(Process(target=process_eval, args=(q, filename, SIM_DATA_ROOT+filename)))
+        procs[-1].start()
+        n_procs_started += 1
+        got_results[filename] = False
+        # Intermediate result collect
+        if n_procs_started % N_PROCS_MAX == 0:
+            collect_results()
+    # collect remaining results if any are pending
+    collect_results()
 
 
