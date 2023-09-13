@@ -405,7 +405,7 @@ if __name__ == "__main__":
     got_results = {}
     n_procs_started = 0
     directory = os.fsencode(SIM_DATA_ROOT)
-    print('Evaluation started: ' + datetime.now().strftime('-%Y-%B-%d--%H-%M'))
+    print('Evaluation started: ' + datetime.now().strftime('%Y-%B-%d %H:%M'))
     for nn, file in enumerate(os.listdir(directory)):
         filename = os.fsdecode(file)
         if not filename.endswith(".pkl"):
@@ -423,6 +423,6 @@ if __name__ == "__main__":
             collect_results()
     # collect remaining results if any are pending
     collect_results()
-    print('Evaluation finished: ' + datetime.now().strftime('-%Y-%B-%d--%H-%M'))
+    print('Evaluation finished: ' + datetime.now().strftime('%Y-%B-%d %H:%M'))
 
 

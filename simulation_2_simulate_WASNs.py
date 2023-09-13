@@ -91,7 +91,7 @@ SIMULATE...
 '''
 
 
-print('Simulation started: ' + datetime.now().strftime('-%Y-%B-%d--%H-%M'))
+print('Simulation started: ' + datetime.now().strftime('%Y-%B-%d %H:%M'))
 for i, topology in enumerate(topologies): 
 
     frame_idx_switch = topology['frame_idx_switch']
@@ -169,5 +169,5 @@ for i, topology in enumerate(topologies):
     with open(SIM_TARGET_DATA_ROOT+SIM_TYPE+'_'+str(i+1)+'_'+str(len(topologies))+'.pkl', 'wb') as f:
         pickle.dump(res, f)
 
-print('Simulation finished: ' + datetime.now().strftime('-%Y-%B-%d--%H-%M'))
+print('Simulation finished: ' + datetime.now().strftime('%Y-%B-%d %H:%M'))
 
