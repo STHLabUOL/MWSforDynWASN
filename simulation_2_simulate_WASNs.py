@@ -20,8 +20,8 @@ INIT
 
 SIM_TYPE = 'join' #"join", "leave", "unlink", "leave_root" 
 DATA_ROOT = 'data/'
-TOPOLOGIES_FILE = '/home/niklas/asn_testbed_p2/other/2023_ASMP_Release/results/2023_09_12/node_topologies_new.pkl' #'results/2023_03_24/node_groups.pkl'
-SIM_TARGET_DATA_ROOT = 'results/2023_09_13/simulation/'+SIM_TYPE+'/'
+TOPOLOGIES_FILE = 'results/2023_03_24/topologies.pkl'
+SIM_TARGET_DATA_ROOT = 'results/2023_03_24/simulation/'+SIM_TYPE+'/'
 
 if os.path.isdir(SIM_TARGET_DATA_ROOT):
     raise Exception('Target directory already exists.')
