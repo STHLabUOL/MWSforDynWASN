@@ -5,7 +5,6 @@ Simulates WASNs for previously drawn node groups.
 import numpy as np
 import os
 from tqdm import tqdm
-import random
 import pickle
 from datetime import datetime
 
@@ -21,8 +20,8 @@ INIT
 
 SIM_TYPE = 'join' #"join", "leave", "unlink", "leave_root" 
 DATA_ROOT = 'data/'
-TOPOLOGIES_FILE = 'results/2023_03_24/node_groups.pkl'
-SIM_TARGET_DATA_ROOT = 'results/2023_03_24/simulation/'+SIM_TYPE+'/'
+TOPOLOGIES_FILE = '/home/niklas/asn_testbed_p2/other/2023_ASMP_Release/results/2023_09_12/node_topologies_new.pkl' #'results/2023_03_24/node_groups.pkl'
+SIM_TARGET_DATA_ROOT = 'results/2023_09_13/simulation/'+SIM_TYPE+'/'
 
 if os.path.isdir(SIM_TARGET_DATA_ROOT):
     raise Exception('Target directory already exists.')
@@ -91,52 +90,6 @@ print('...Audio signals loaded.')
 SIMULATE...
 '''
 
-def modify_topology(TopMng, n_nodes_all, scenario):
-    '''
-    Applies random topology modofications via TopMng based on given parameters.
-    Input:
-        TopMng (obj): Reference to Topology Manager
-        n_nodes_all (int): number of all available nodes
-        scenario (string): which scenario to simulate via the topology change
-                           options: "join", "leave", "unlink", "leave_root"
-    Return:
-        node_ids_ever (list): list of all involved nodes, before or after modification
-        node_id_changed (int): which node changed (limited to 1)
-        node_link_changed (?): which node-link changed (limited to 1)
-    '''
-
-    node_ids = TopMng.get_node_ids()
-
-    if scenario == 'join':
-        node_ids_availabe_rest = [nid for nid in range(n_nodes_all) if nid not in node_ids]
-        node_id_add = random.sample(node_ids_availabe_rest, 1)[0]
-        node_ids_ever = [*node_ids, node_id_add] # all nodes apparing before or after change
-        node_id_changed = node_id_add
-        node_link_changed = None
-        TopMng.add_nodes({node_id_add: node_coord(node_id_add)})
-
-    elif scenario == 'leave' or scenario == 'leave_root':
-        node_id_remove = random.sample([nid for nid in node_ids[1:]], 1)[0]
-        if scenario == 'leave_root':
-            node_id_remove = int(TopMng.nodes_levels[0][0][0].split('_')[1])
-        node_ids_ever = node_ids
-        node_id_changed = node_id_remove
-        node_link_changed = None
-        TopMng.remove_nodes([node_id_remove])
-
-    elif scenario == 'unlink':
-        node_ids_ever = node_ids
-        node_ids_cut = node_ids.copy()
-        node_ids_cut.pop(node_ids_cut.index(9)) # unlinking from node 9 forbidden (bottleneck)
-        node_link_disable_1 = random.sample(node_ids_cut, 1)[0]
-        node_link_disable_2 = random.sample([nid for nid in node_ids_cut if nid != node_link_disable_1], 1)[0]
-        node_link_disable = [node_link_disable_1, node_link_disable_2]
-        node_id_changed = None
-        node_link_changed = node_link_disable
-        TopMng.set_node_links([node_link_disable], False)
-
-    return node_ids_ever, node_id_changed, node_link_changed
-
 
 print('Simulation started: ' + datetime.now().strftime('-%Y-%B-%d--%H-%M'))
 for i, topology in enumerate(topologies): 
@@ -146,19 +99,20 @@ for i, topology in enumerate(topologies):
 
     # Setup "before" topology
     node_ids = topology['node_ids']
-    TopMng = TopologyManager({nid: node_coord(nid) for nid in node_ids})
-    nodes_levels_before = TopMng.nodes_levels
+    nodes_levels_before = topology['nodes_levels_before']
     nodes_select_before = TopologyManager.get_unique_node_list(nodes_levels_before)
 
-    if SIM_TYPE == 'leave_root' and TopMng.get_node_ids('int', ordered=True)[0] == 9:
+    if SIM_TYPE == 'leave_root' and topology['modifications']['leave_root']['node_id_changed'] is None:
         print('Skipping ', str(i), ': Root Node 9 cannot be removed (Bottleneck).');
         continue
 
     # Get modified topology
-    node_ids_ever, node_id_changed, node_link_changed = modify_topology(TopMng, n_nodes_all, SIM_TYPE)    
-    n_nodes = len(node_ids_ever)
-    nodes_levels_after = TopMng.nodes_levels
+    node_ids_ever = topology['modifications'][SIM_TYPE]['node_ids_ever']
+    node_id_changed = topology['modifications'][SIM_TYPE]['node_id_changed']
+    node_link_changed = topology['modifications'][SIM_TYPE]['node_link_changed']
+    nodes_levels_after = topology['modifications'][SIM_TYPE]['nodes_levels_after']
     nodes_select_after = TopologyManager.get_unique_node_list(nodes_levels_after)
+    n_nodes = max(len(nodes_select_before), len(nodes_select_after))
 
     # Get ground truth SRO
     SRO_true = np.zeros((n_nodes))
