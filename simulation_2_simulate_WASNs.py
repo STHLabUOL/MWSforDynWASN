@@ -44,6 +44,8 @@ n_nodes_all = 13
 nodes_select_all = ['node_'+str(nid) for nid in list(range(n_nodes_all))] # all signals should be loaded
 
 
+print('Simulation started: ' + datetime.now().strftime('%Y-%B-%d %H:%M'))
+
 # Import previously drawn node groups for topologies
 with open(TOPOLOGIES_FILE, 'rb') as f:
     topologies = pickle.load(f)
@@ -91,7 +93,6 @@ SIMULATE...
 '''
 
 
-print('Simulation started: ' + datetime.now().strftime('%Y-%B-%d %H:%M'))
 for i, topology in enumerate(topologies): 
 
     frame_idx_switch = topology['frame_idx_switch']
