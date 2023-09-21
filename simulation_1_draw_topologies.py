@@ -14,8 +14,8 @@ from modules.topology_tools import TopologyManager
 INIT
 '''
 
-DATA_ROOT = '../../2023_ASMP/data_asmp/'
-TARGET_FILE = ''
+DATA_ROOT = 'data/'
+TARGET_FILE = 'topologies_my.pkl'
 if os.path.isfile(TARGET_FILE):
     raise Exception('Target file already exists.')
 
