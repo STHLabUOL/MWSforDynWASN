@@ -347,7 +347,7 @@ def collect_results():
         got_results[res['filename']] = True
         print('Got results for ', res['filename'])
         # save
-        with open(EVAL_TARGET_DATA_ROOT+'eval_'+res['filename'], 'wb') as file:
+        with open(EVAL_TARGET_DIR+'eval_'+res['filename'], 'wb') as file:
             pickle.dump(res, file)
     print('Got all results.')
 
@@ -360,20 +360,24 @@ if __name__ == "__main__":
     '''
 
     EVAL_BEFORE_SEGMENT = False
-    SIM_DATA_ROOT = '/home/niklas/asn_testbed_p2/other/2023_ASMP_Release/results/2023_03_24/simulation/join/'#'results/2023_03_24/simulation/join/'
-    EVAL_TARGET_DATA_ROOT = '/home/niklas/asn_testbed_p2/other/2023_ASMP_Release/results/2023_03_24/evaluation/after/join2/'#'results/2023_03_24/evaluation/after/join/'
+    SCENARIO = 'join' # join, unlink, leave, leave_root
+    SIM_DATA_ROOT = 'results/2023_03_24/simulation/'
+    EVAL_TARGET_ROOT = 'results/2023_03_24/evaluation/'
+
+    SIM_DATA_DIR = SIM_DATA_ROOT+SCENARIO+'/' #results/2023_03_24/simulation/join/'
+    EVAL_TARGET_DIR = EVAL_TARGET_ROOT+('before/' if EVAL_BEFORE_SEGMENT else 'after/'+SCENARIO+'/')
     N_PROCS_MAX = 4 #max. number of parallel processes scales memory requirements.
 
-    if not os.path.isdir(SIM_DATA_ROOT):
+    if not os.path.isdir(SIM_DATA_DIR):
         raise Exception('Simulation data directory not found.')
-    if os.path.isdir(EVAL_TARGET_DATA_ROOT):
+    if os.path.isdir(EVAL_TARGET_DIR):
         raise Exception('Target directory already exists. Please remove or choose a different directory name.')
     else:
-        os.makedirs(EVAL_TARGET_DATA_ROOT)
+        os.makedirs(EVAL_TARGET_DIR)
 
 
     # Import parameters from simulation metadata
-    with open(SIM_DATA_ROOT+'sim_metadata.pkl', 'rb') as f:
+    with open(SIM_DATA_DIR+'sim_metadata.pkl', 'rb') as f:
         simdata = pickle.load(f)
     sim_type = simdata['sim_type']
     sig_len_sec = simdata['sig_len_sec']
@@ -404,7 +408,7 @@ if __name__ == "__main__":
     procs = []
     got_results = {}
     n_procs_started = 0
-    directory = os.fsencode(SIM_DATA_ROOT)
+    directory = os.fsencode(SIM_DATA_DIR)
     print('Evaluation started: ' + datetime.now().strftime('%Y-%B-%d %H:%M'))
     for nn, file in enumerate(os.listdir(directory)):
         filename = os.fsdecode(file)
@@ -414,7 +418,7 @@ if __name__ == "__main__":
         if filename == 'sim_metadata.pkl':
             continue
         print('Evaluating ', filename)
-        procs.append(Process(target=process_eval, args=(q, filename, SIM_DATA_ROOT+filename)))
+        procs.append(Process(target=process_eval, args=(q, filename, SIM_DATA_DIR+filename)))
         procs[-1].start()
         n_procs_started += 1
         got_results[filename] = False
