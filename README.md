@@ -1,3 +1,5 @@
+![Example WASN](banner.png)
+
 ### Python implementation of simulation framework used for production of experimantal results published in the paper ```"Online distributed waveform-synchronization for acoustic sensor networks with dynamic topology"``` written by Aleksej Chinaev, Niklas Knaepper and Gerald Enzner
 
 The simulation framework uses Python scripts and a notebook to present the online distributed waveform-based synchronization of wireless acoustic sensor networks with dynamic topology:
