@@ -15,6 +15,11 @@ from modules.topology_tools import TopologyManager
 INIT
 '''
 
+# Plot evaluation data for topologies from topologies_my.pkl
+# SIM_DATA_ROOT_BASE = 'results/simulation/'
+# EVAL_DATA_ROOT_BASE = 'results/evaluation/'
+
+# Plot evaluation data for 50 topologies saved in results/2023_03_24/topologies.pkl used in [1], see GitHub.
 SIM_DATA_ROOT_BASE = 'results/2023_03_24/simulation/'
 EVAL_DATA_ROOT_BASE = 'results/2023_03_24/evaluation/'
 PLOT_TARGET_DIR = ''# directory with trailing "/" or empty string to skip exports

@@ -18,10 +18,18 @@ from modules.topology_tools import TopologyManager
 INIT
 '''
 
-SIM_TYPE = 'join' #"join", "leave", "unlink", "leave_root" 
+# please execute for all four possible WASN_MODIFICATIONs
+WASN_MODIFICATION = 'join' #'join', 'leave', 'unlink', 'leave_root'
 DATA_ROOT = 'data/'
+
+# Simulate WASN for 5 topologies saved by simulation_1_draw_topologies.py in topologies_my.pkl
+# TOPOLOGIES_FILE = 'topologies_my.pkl'
+# SIM_TARGET_DATA_ROOT = 'results/simulation/'+WASN_MODIFICATION+'/'
+
+# Simulate WASN for 50 topologies saved in results/2023_03_24/topologies.pkl used for experimantal
+# evaluation in publication [1], see GitHub.
 TOPOLOGIES_FILE = 'results/2023_03_24/topologies.pkl'
-SIM_TARGET_DATA_ROOT = 'results/2023_03_24/simulation/'+SIM_TYPE+'/'
+SIM_TARGET_DATA_ROOT = 'results/2023_03_24/simulation/'+WASN_MODIFICATION+'/'
 
 if os.path.isdir(SIM_TARGET_DATA_ROOT):
     raise Exception('Target directory already exists.')
@@ -63,7 +71,7 @@ with open(SIM_TARGET_DATA_ROOT+'sim_metadata.pkl', 'wb') as file:
         'example_id': ex_id,
         'n_nodes_all': n_nodes_all,
         'n_topologies': len(topologies),
-        'sim_type': SIM_TYPE,
+        'sim_type': WASN_MODIFICATION,
         'sig_len_sec': sig_len_sec,
         'fs_Hz': fs_Hz,
         'frame_len': frame_len,
@@ -103,15 +111,15 @@ for i, topology in enumerate(topologies):
     nodes_levels_before = topology['nodes_levels_before']
     nodes_select_before = TopologyManager.get_unique_node_list(nodes_levels_before)
 
-    if SIM_TYPE == 'leave_root' and topology['modifications']['leave_root']['node_id_changed'] is None:
+    if WASN_MODIFICATION == 'leave_root' and topology['modifications']['leave_root']['node_id_changed'] is None:
         print('Skipping ', str(i), ': Root Node 9 cannot be removed (Bottleneck).');
         continue
 
     # Get modified topology
-    node_ids_ever = topology['modifications'][SIM_TYPE]['node_ids_ever']
-    node_id_changed = topology['modifications'][SIM_TYPE]['node_id_changed']
-    node_link_changed = topology['modifications'][SIM_TYPE]['node_link_changed']
-    nodes_levels_after = topology['modifications'][SIM_TYPE]['nodes_levels_after']
+    node_ids_ever = topology['modifications'][WASN_MODIFICATION]['node_ids_ever']
+    node_id_changed = topology['modifications'][WASN_MODIFICATION]['node_id_changed']
+    node_link_changed = topology['modifications'][WASN_MODIFICATION]['node_link_changed']
+    nodes_levels_after = topology['modifications'][WASN_MODIFICATION]['nodes_levels_after']
     nodes_select_after = TopologyManager.get_unique_node_list(nodes_levels_after)
     n_nodes = max(len(nodes_select_before), len(nodes_select_after))
 
@@ -150,7 +158,7 @@ for i, topology in enumerate(topologies):
 
     # Compile and save results
     res = {
-        'sim_type': SIM_TYPE,
+        'sim_type': WASN_MODIFICATION,
         'topology_idx': i,
         'nodes_levels_before': nodes_levels_before,
         'nodes_levels_after': nodes_levels_after,
@@ -167,7 +175,7 @@ for i, topology in enumerate(topologies):
     
     Net.shutdown()
 
-    with open(SIM_TARGET_DATA_ROOT+SIM_TYPE+'_'+str(i+1)+'_'+str(len(topologies))+'.pkl', 'wb') as f:
+    with open(SIM_TARGET_DATA_ROOT+WASN_MODIFICATION+'_'+str(i+1)+'_'+str(len(topologies))+'.pkl', 'wb') as f:
         pickle.dump(res, f)
 
 print('Simulation finished: ' + datetime.now().strftime('%Y-%B-%d %H:%M'))

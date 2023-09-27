@@ -6,7 +6,7 @@ import os
 import numpy as np
 import pickle
 import random
-import datetime
+from datetime import datetime
 from tqdm import tqdm
 from lazy_dataset.database import JsonDatabase
 from modules.topology_tools import TopologyManager
@@ -87,7 +87,8 @@ DRAW GROUPS
 '''
 
 topologies = []
-print('Drawing topologies. Start: ' + datetime.now().strftime('%Y-%B-%d %H:%M'))
+print('Drawing topologies.')
+print('Start: ' + datetime.now().strftime('%Y-%B-%d %H:%M'))
 for i in tqdm(range(N_topologies)):
 
 
