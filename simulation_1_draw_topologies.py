@@ -111,6 +111,7 @@ for i in tqdm(range(N_topologies)):
     node_id_changed = {}
     node_ids_ever = {}
     for mod_type in ['join', 'unlink', 'leave', 'leave_root']:
+        TopMng = TopologyManager({nid: node_coord(nid) for nid in node_ids}) # re-init
         if mod_type == 'leave_root' and TopMng.get_node_ids('int', ordered=True)[0] == 9:
             node_id_changed[mod_type] = None
             nodes_levels_after[mod_type] = None
