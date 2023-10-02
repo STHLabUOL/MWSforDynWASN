@@ -22,12 +22,11 @@ INIT
 # Plot evaluation data for 50 topologies saved in results/2023_03_24/topologies.pkl used in [1], see GitHub.
 SIM_DATA_ROOT_BASE = 'results/2023_03_24/simulation/'
 EVAL_DATA_ROOT_BASE = 'results/2023_03_24/evaluation/'
-PLOT_TARGET_DIR = ''# directory with trailing "/" or empty string to skip exports
+PLOT_TARGET_DIR = 'results/figures/'# directory with trailing "/" or empty string to skip exports
 
 if PLOT_TARGET_DIR:
-    if os.path.isdir(PLOT_TARGET_DIR):
-        raise Exception('Plot target directory already exists.')
-    os.mkdir(PLOT_TARGET_DIR)
+    if not os.path.isdir(PLOT_TARGET_DIR):
+        os.mkdir(PLOT_TARGET_DIR)
     import tikzplotlib
 
 #%%
@@ -175,6 +174,7 @@ ax[2].set_xticks((1,), ('joined',))
 ax[2].set_yticks((), ())
 
 if PLOT_TARGET_DIR:
+    plt.savefig(PLOT_TARGET_DIR+'rmse.jpg')
     tikzplotlib.save(PLOT_TARGET_DIR+'rmse.tex')
 
 
@@ -218,6 +218,7 @@ ax[2].set_yticks((), ())
 ax[2].set_ylim((0, 1.1))
 
 if PLOT_TARGET_DIR:
+    plt.savefig(PLOT_TARGET_DIR+'amsc.jpg')
     tikzplotlib.save(PLOT_TARGET_DIR+'amsc.tex')
 
 
@@ -261,6 +262,7 @@ ax[2].set_yticks((), ())
 ax[2].set_ylim((-5, 30))
 
 if PLOT_TARGET_DIR:
+    plt.savefig(PLOT_TARGET_DIR+'ssnr.jpg')
     tikzplotlib.save(PLOT_TARGET_DIR+'ssnr.tex')
 
 # %%
@@ -289,6 +291,7 @@ ax[1].set_xticks((1,), ('joined',))
 ax[1].set_ylim((0, 150))
 
 if PLOT_TARGET_DIR:
+    plt.savefig(PLOT_TARGET_DIR+'ts.jpg')
     tikzplotlib.save(PLOT_TARGET_DIR+'ts.tex')
 
 
