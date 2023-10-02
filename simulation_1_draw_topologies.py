@@ -16,7 +16,7 @@ INIT
 '''
 
 DATA_ROOT = 'data/'
-TARGET_FILE = 'topologies_my.pkl'
+TARGET_FILE = 'results/topologies_my.pkl'
 if os.path.isfile(TARGET_FILE):
     raise Exception('Target file already exists.')
 

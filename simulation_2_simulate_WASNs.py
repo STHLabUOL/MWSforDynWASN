@@ -23,7 +23,7 @@ WASN_MODIFICATION = 'join' #'join', 'leave', 'unlink', 'leave_root'
 DATA_ROOT = 'data/'
 
 # Simulate WASN for 5 topologies saved by simulation_1_draw_topologies.py in topologies_my.pkl
-# TOPOLOGIES_FILE = 'topologies_my.pkl'
+# TOPOLOGIES_FILE = 'results/topologies_my.pkl'
 # SIM_TARGET_DATA_ROOT = 'results/simulation/'+WASN_MODIFICATION+'/'
 
 # Simulate WASN for 50 topologies saved in results/2023_03_24/topologies.pkl used for experimantal
