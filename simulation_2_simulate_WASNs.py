@@ -19,15 +19,17 @@ from modules.topology_tools import TopologyManager
 INIT
 '''
 
-if True:
+FLAG_CUSTOM_SIMULATION = False
+
+if FLAG_CUSTOM_SIMULATION:
+    # Simulate WASN for topologies saved by simulation_1_draw_topologies.py
+    SIM_TARGET_ROOT = 'results/'
+    TOPOLOGIES_FILE = 'results/topologies_my.pkl'
+else:
     # Simulate WASN for 50 topologies saved in results/2023_03_24/topologies.pkl used for experimantal
     # evaluation in publication [1], see GitHub.
     SIM_TARGET_ROOT = 'results/2023_03_24/'
     TOPOLOGIES_FILE = 'results/2023_03_24/node_topologies.pkl'
-else:
-    # Simulate WASN for topologies saved by simulation_1_draw_topologies.py
-    SIM_TARGET_ROOT = 'results/'
-    TOPOLOGIES_FILE = 'results/topologies_my.pkl'
 
 DATA_ROOT = 'data/'
 WASN_MODIFICATION = 'join' #'join', 'leave', 'unlink', 'leave_root'
