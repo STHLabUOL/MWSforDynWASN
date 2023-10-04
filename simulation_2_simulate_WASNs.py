@@ -1,5 +1,6 @@
 '''
 Simulates WASNs for previously drawn node groups.
+Please execute for all four possible WASN_MODIFICATIONs
 '''
 
 import numpy as np
@@ -18,24 +19,24 @@ from modules.topology_tools import TopologyManager
 INIT
 '''
 
-# please execute for all four possible WASN_MODIFICATIONs
-WASN_MODIFICATION = 'join' #'join', 'leave', 'unlink', 'leave_root'
+if True:
+    # Simulate WASN for 50 topologies saved in results/2023_03_24/topologies.pkl used for experimantal
+    # evaluation in publication [1], see GitHub.
+    SIM_TARGET_ROOT = 'results/2023_03_24/'
+    TOPOLOGIES_FILE = 'results/2023_03_24/node_topologies.pkl'
+else:
+    # Simulate WASN for topologies saved by simulation_1_draw_topologies.py
+    SIM_TARGET_ROOT = 'results/'
+    TOPOLOGIES_FILE = 'results/topologies_my.pkl'
+
 DATA_ROOT = 'data/'
+WASN_MODIFICATION = 'join' #'join', 'leave', 'unlink', 'leave_root'
+SIM_TARGET_DIR = SIM_TARGET_ROOT+'simulation/'+WASN_MODIFICATION+'/'
 
-# Simulate WASN for 5 topologies saved by simulation_1_draw_topologies.py in topologies_my.pkl
-# TOPOLOGIES_FILE = 'results/topologies_my.pkl'
-# SIM_TARGET_DATA_ROOT = 'results/simulation/'+WASN_MODIFICATION+'/'
-
-# Simulate WASN for 50 topologies saved in results/2023_03_24/topologies.pkl used for experimantal
-# evaluation in publication [1], see GitHub.
-TOPOLOGIES_FILE = 'results/2023_03_24/topologies.pkl'
-SIM_TARGET_DATA_ROOT = 'results/2023_03_24/simulation/'+WASN_MODIFICATION+'/'
-
-if os.path.isdir(SIM_TARGET_DATA_ROOT):
+if os.path.isdir(SIM_TARGET_DIR):
     raise Exception('Target directory already exists.')
 else:
-    os.makedirs(SIM_TARGET_DATA_ROOT)
-
+    os.makedirs(SIM_TARGET_DIR)
 
 sig_len_sec = 540
 fs_Hz = 16e3
@@ -59,7 +60,7 @@ with open(TOPOLOGIES_FILE, 'rb') as f:
     topologies = pickle.load(f)
 
 # Save key parameters of this simulation
-with open(SIM_TARGET_DATA_ROOT+'sim_metadata.pkl', 'wb') as file:
+with open(SIM_TARGET_DIR+'sim_metadata.pkl', 'wb') as file:
     metadata = {
         'timestamp': datetime.now().strftime("%d/%m/%Y %H:%M:%S") ,
         'paths': {
@@ -175,7 +176,7 @@ for i, topology in enumerate(topologies):
     
     Net.shutdown()
 
-    with open(SIM_TARGET_DATA_ROOT+WASN_MODIFICATION+'_'+str(i+1)+'_'+str(len(topologies))+'.pkl', 'wb') as f:
+    with open(SIM_TARGET_DIR+WASN_MODIFICATION+'_'+str(i+1)+'_'+str(len(topologies))+'.pkl', 'wb') as f:
         pickle.dump(res, f)
 
 print('Simulation finished: ' + datetime.now().strftime('%Y-%B-%d %H:%M'))
