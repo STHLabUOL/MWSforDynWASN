@@ -29,6 +29,26 @@ and the step-by-step Python main scripts, developed for the following tasks:
 Please download the database of simulated node signals and relevant metadata from:
 [https://cloud.uol.de/s/dq5SCkLg7yPHgC3](https://cloud.uol.de/s/dq5SCkLg7yPHgC3) and place the files inside the `data/` directory.
 
+### 2.1 Data properties
+
+All acoustic source signals exhibit a reference sampling rate of 16 kHz.
+
+While clean speech signals are taken from the LibriSpeech corpus, a music source is downloaded from the Freesound datasets.
+
+The resulting microphone signals are superimposed by uncorrelated computer-generated sensor noise of constant power yielding a global signal-to-noise ratio (SNR) of around 33 dB averaged over all sensor nodes.
+
+### 2.2 Organization of data
+
+- room_models.stl
+- json/
+   - positions.json
+   - testbed.json
+- audio/
+   - example_0_async/
+      - node_[ID]_mic_[ID].wav
+   - example_0_sync/
+      - node_[ID]_mic_[ID].wav
+
 
 ## 3 Exploring an exemplaray WASN and its modification
 
@@ -120,10 +140,11 @@ The following provides an overview over the adjustable parameters:
 ### 4.3 Evaluation of simulation results
 
 `simulation_3_evaluate.py` is used to evaluate the results of the previously simulated WASN operation. Specifically, the following evaluation metrics are computed:
-- RMSE of SRO estimation
-- Settling time of SRO estimation
-- SSNR of synchronized and asynchronous signals
-- AMSC of synchronized and asynchronous signals
+- Root mean square error (RMSE) of SRO estimation
+- Settling time of SRO estimation (Ts)
+- Averaged magnitude squared coherence (AMSC) of asynchronous and synchronized signals
+- Signal to synchronization noise ratio (SSNR) of asynchronous and synchronized signals
+
 
 As before, set `FLAG_CUSTOM_SIMULATION=True` and optionally adjust the path in `RESULTS_DATA_ROOT` if you used a custom set of topologies for the simulation or otherwise changed the directory in which the simulation results are stored.
 
@@ -153,4 +174,9 @@ within last 10 signal seconds (right).
 after Tc (middle) and for newly integrated nodes
 within last 10 signal seconds (right).
 
+## 5. Acknowledgment
 
+[Deutsche Forschungsgemeinschaft DFG-FOR 2457](https://asn.uni-paderborn.de/)
+
+
+![Deutsche Forschungsgemeinschaft ](dfg.png)
