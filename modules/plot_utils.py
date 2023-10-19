@@ -32,13 +32,14 @@ def plot_scene_diary(scene_diary, max_len):
         ymax = (rows[scene_id]+.9)/num_rows
         plt.axvspan(onset, offset, ymin, ymax)
 
-    plt.title('Fig.2 (b) Scene diary')
+    #plt.title('Fig.2 (b) Scene diary')
     plt.xlabel('Time [s]')
     plt.xlim(0, max_len)
     plt.ylabel('Scene')
     plt.yticks((np.arange(num_rows) + .5) / num_rows , scenes)
     plt.grid()
 
+    plt.show()
     #plt.savefig('scene_diary.svg')
 
 def plot_positions_and_topology(example, room_model, max_len, nodes_levels=None, export_dir=""):
@@ -125,6 +126,8 @@ def plot_positions_and_topology(example, room_model, max_len, nodes_levels=None,
     if export_dir:
         plt.savefig(export_dir)
 
+    plt.show()
+
 def plot_pos_hist(src_diary, max_len):
     
     figure = plt.figure(figsize=(12.5, 2))
@@ -170,5 +173,6 @@ def plot_pos_hist(src_diary, max_len):
     plt.ylabel('Position ID')
     plt.yticks((np.arange(num_rows) + .5) / num_rows , src_positions)
     plt.grid()
+    plt.show()
     #plt.legend(handles, labels,loc='upper center', bbox_to_anchor=(0.5, 1.2), ncol=len(sources))
     #plt.legend(handles, labels,loc='upper center', ncol=len(sources))
