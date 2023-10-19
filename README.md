@@ -1,6 +1,6 @@
 # Synchronization Of Dynamic WASN
 
-Python implementation of simulation framework used for production of experimantal results published in the paper ```"Online distributed waveform-synchronization for acoustic sensor networks with dynamic topology"``` written by Aleksej Chinaev, Niklas Knaepper and Gerald Enzner
+Python implementation of simulation framework used for production of experimantal results published in the paper **Online distributed waveform-synchronization for acoustic sensor networks with dynamic topology** written by Aleksej Chinaev, Niklas Knaepper and Gerald Enzner
 
 ![Example WASN](banner.png)
 
