@@ -1,4 +1,6 @@
-# Python implementation of simulation framework used for production of experimantal results published in the paper ```"Online distributed waveform-synchronization for acoustic sensor networks with dynamic topology"``` written by Aleksej Chinaev, Niklas Knaepper and Gerald Enzner
+# Synchronization Of Dynamic WASN
+
+Python implementation of simulation framework used for production of experimantal results published in the paper ```"Online distributed waveform-synchronization for acoustic sensor networks with dynamic topology"``` written by Aleksej Chinaev, Niklas Knaepper and Gerald Enzner
 
 ![Example WASN](banner.png)
 
@@ -175,8 +177,54 @@ after Tc (middle) and for newly integrated nodes
 within last 10 signal seconds (right).
 
 ## 5. Acknowledgment
-
-[Deutsche Forschungsgemeinschaft DFG-FOR 2457](https://asn.uni-paderborn.de/)
-
+This work was partially supported by [German Research Foundation (DFG)](https://asn.uni-paderborn.de/) - Project 282835863.
 
 ![Deutsche Forschungsgemeinschaft ](dfg.png)
+
+## 6. Related publications
+
+```BibTex
+@Article{Chinaev2023dynamic,
+   author  = {Chinaev, A. and Knaepper, N. and Enzner, G.},
+   title   = {Online distributed waveform-synchronization for acoustic
+sensor networks with dynamic topology},
+   journal = {EURASIP J. on Audio, Speech, and Music Process.},
+   year    = {2023},
+}
+```
+
+```BibTex
+@InProceedings{Chinaev2023longterm,
+   author    = {Chinaev, A. and Knaepper, N. and Enzner, G.},
+   booktitle = {Proc. IEEE Int. Conf. Acoust., Speech, Signal Process.},
+   title     = {Long-term Synchronization of Wireless Acoustic Sensor
+Networks with Nonpersistent Acoustic Activity using Coherence State},
+   year      = {2023},
+   month     = {June},
+   pages     = {1--5}
+}
+```
+
+```BibTex
+@InProceedings{Chinaev2022distributed,
+   author    = {Chinaev, A. and Enzner, G.},
+   booktitle = {Proc. Int. Workshop Acoust. Signal Enhancement},
+   title     = {Distributed Synchronization for Ad-Hoc Acoustic Sensor
+Networks Using Closed-Loop Double-Cross-Correlation Processing},
+   year      = {2022},
+   month     = {Sep.},
+   pages     = {1--5}
+}
+```
+
+```BibTex
+@InProceedings{Chinaev2021control,
+   author    = {Chinaev, A. and Wienand, S. and Enzner, G.},
+   booktitle = {Proc. IEEE Int. Conf. Acoust., Speech, Signal Process.},
+   title     = {Control Architecture of the Double-Cross-Correlation
+Processor for Sampling-Rate-Offset Estimation in Acoustic Sensor Networks},
+   year      = {2021},
+   month     = {June},
+   pages     = {801--805}
+}
+```
